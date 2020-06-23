@@ -14,7 +14,7 @@ on:
   pull_request:
 
 env:  
-  IMAGE_NAME: robsontenorio/laravel
+  IMAGE_NAME: image
 
 jobs:
   # Push image to GitHub Packages.
