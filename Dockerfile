@@ -39,6 +39,7 @@ RUN apk add --update --no-cache \
   poppler-utils \    
   rsync \
   supervisor \ 
+  unzip \
   yarn 
 
 # Install extra php extensions
@@ -47,7 +48,7 @@ RUN docker-php-ext-install \
   pdo_mysql \
   pdo_pgsql \
   opcache \
-  zip
+  zip 
 
 # Complementar pecl/pear extensions
 # Note
