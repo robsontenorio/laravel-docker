@@ -36,6 +36,7 @@ RUN apk add --update --no-cache \
   openssh-client \
   postgresql-dev \
   poppler-utils \    
+  rsync \
   supervisor \ 
   yarn 
 
