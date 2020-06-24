@@ -28,6 +28,7 @@ RUN apk add --update --no-cache \
   bash \  
   chromium-chromedriver \
   git \      
+  htop \
   libpng-dev \
   libzip-dev \   
   nano \        
