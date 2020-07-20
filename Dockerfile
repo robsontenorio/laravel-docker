@@ -29,8 +29,10 @@ RUN apk add --update --no-cache \
   chromium-chromedriver \
   git \      
   htop \
+  libjpeg-turbo-dev \
   libpng-dev \
   libzip-dev \   
+  freetype-dev \
   nano \        
   nginx \
   npm \
@@ -43,6 +45,8 @@ RUN apk add --update --no-cache \
   yarn 
 
 # Install extra php extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+
 RUN docker-php-ext-install \
   gd \  
   pdo_mysql \
