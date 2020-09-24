@@ -7,6 +7,7 @@ LABEL site="http://github.com/robsontenorio/laravel-docker"
 ARG GITHUB_OAUTH_KEY
 ENV GITHUB_OAUTH_KEY=${GITHUB_OAUTH_KEY}
 ENV CONTAINER_ROLE=${CONTAINER_ROLE:-APP}
+ENV COMPOSER_MEMORY_LIMIT=-1
 
 # Set workdir
 WORKDIR /var/www/app
