@@ -1,106 +1,73 @@
-FROM php:7.4.6-fpm-alpine3.11
+FROM ubuntu:20.04
 
 LABEL maintainer="Robson Tenório"
-LABEL site="http://github.com/robsontenorio/laravel-docker"
+LABEL site="http://github.com/robsontenorio"
 
-# ENV
-ARG GITHUB_OAUTH_KEY
-ENV GITHUB_OAUTH_KEY=${GITHUB_OAUTH_KEY}
-ENV CONTAINER_ROLE=${CONTAINER_ROLE:-APP}
-ENV COMPOSER_MEMORY_LIMIT=-1
+ENV TZ=UTC 
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV CONTAINER_ROLE=${CONTAINER_ROLE:-APP} 
+ENV GITHUB_OAUTH_KEY=${GITHUB_OAUTH_KEY:-} 
 
-# Set workdir
-WORKDIR /var/www/app
+WORKDIR /var/www/html
 
-# Create the "appuser" , but don't switch yet
-RUN adduser -D appuser
-
-# Copy files with owner
-COPY --chown=appuser:appuser config /
-COPY --chown=appuser:appuser start.sh /usr/local/bin/start
-
-RUN chmod a+x -R /tmp /usr/local/bin/start
-
-# Install temporary build dependencies
-RUN apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS 
-
-# Install required utilities
-RUN apk add --update --no-cache \        
-  bash \  
-  chromium-chromedriver \
-  git \      
-  htop \
-  libjpeg-turbo-dev \
-  libpng-dev \
-  libzip-dev \   
-  freetype-dev \
-  nano \        
+RUN apt update \
+  # PHP 8.0 repository 
+  && apt install -y software-properties-common && add-apt-repository ppa:ondrej/php \
+  && apt update \
+  # PHP extensions
+  && apt install -y \  
+  php8.0-bcmath \
+  php8.0-cli \
+  php8.0-curl \
+  php8.0-fpm \
+  php8.0-gd \
+  php8.0-mbstring  \ 
+  php8.0-mysql \  
+  php8.0-redis \  
+  php8.0-sockets \  
+  php8.0-sqlite3 \  
+  php8.0-pcov \
+  php8.0-pgsql \
+  php8.0-opcache \
+  php8.0-xml \ 
+  # Extra
+  curl \
+  git \
+  nano \
   nginx \
-  npm \
-  openssh-client \
-  postgresql-dev \
-  poppler-utils \    
-  rsync \
-  supervisor \ 
+  supervisor \
   unzip \
-  yarn 
+  zsh \  
+  # Clean up
+  && apt-get autoremove -y 
 
-# Install extra php extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+# OhMyZsh
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" 
 
-RUN docker-php-ext-install \
-  gd \  
-  pdo_mysql \
-  pdo_pgsql \
-  opcache \
-  zip 
+# Composer
+RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin --filename=composer  \
+  && echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' >> ~/.zshrc \
+  && if [ ${GITHUB_OAUTH_KEY} ]; then composer config --global github-oauth.github.com $GITHUB_OAUTH_KEY ;fi
 
-# Complementar pecl/pear extensions
-# Note
-# - xdebug: will not be enabled by default
-# - pcov: although enabled here, will be disabled by php.ini
-RUN pecl install redis xdebug pcov
-RUN docker-php-ext-enable redis pcov
+# Laravel Installer 
+RUN composer global require laravel/installer && composer clear-cache    
 
-# Cleanup temporary dev dependencies and clean cache
-RUN apk del -f .build-deps
+# Node, NPM, Yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer 
+# Config files
+COPY start.sh /usr/local/bin/start
+COPY config/etc /etc
+COPY config/etc/php/8.0/cli/conf.d/y-php.ini /etc/php/8.0/fpm/conf.d/y-php.ini
 
-# Set permissions
-RUN chmod -R 777 \    
-  /var/run \
-  /var/log \
-  /var/tmp \
-  /var/lib \
-  /var/www/app \
-  /usr/local/etc/php/conf.d/xdebug.disabled
+# Required folder for php-fpm
+RUN mkdir -p /run/php 
 
-RUN chown -R appuser:appuser \
-  /var/www/app/  \
-  /usr/local/etc/php/conf.d/xdebug.disabled
+# Permissions
+RUN chmod a+x /usr/local/bin/start 
 
-
-# Run container as non root user
-USER appuser
-
-# Github oauth key, recommended by Prestissimo
-RUN if [ ${GITHUB_OAUTH_KEY} ]; then \
-  composer config -g github-oauth.github.com $GITHUB_OAUTH_KEY \
-  ;fi
-
-# Laravel Installer and Prestissimo
-RUN composer global require laravel/installer \
-  && composer global require hirak/prestissimo \
-  && composer clear-cache
-
-# Path and handy aliases
-RUN echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.bashrc  \
-  && echo 'alias t="./vendor/bin/phpunit-watcher watch"' >> ~/.bashrc \ 
-  && source ~/.bashrc
-
-# Expose needed ports for nginx/node/dusk
+# Nginx (8080), Node (3000/3001), Laravel Dusk (9515/9773)
 EXPOSE 8080 8000 3000 3001 9515 9773
 
+# Start services through "supervisor" based on "CONTAINER_ROLE". See "start.sh".
 CMD /usr/local/bin/start
