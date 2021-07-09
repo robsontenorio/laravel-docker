@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 LABEL maintainer="Robson Tenório"
-LABEL site="http://github.com/robsontenorio"
+LABEL site="https://github.com/robsontenorio/laravel-docker"
 
 ENV TZ=UTC 
 ENV DEBIAN_FRONTEND=noninteractive 
