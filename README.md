@@ -111,25 +111,26 @@ services:
  # Other services like mysql, redis ...
 ```
 
-## Deploy tasks
 
-This only applies if or deployment server is based on docker.
+## Production
 
-This image relies on `/usr/local/bin/start`  script to bootstrap all services (see `start.sh`). If you need to run additional commands on container startup make sure to combine with a extra script.
+This only applies if your deployment platform is based on docker. 
+
+This image relies on `/usr/local/bin/start`  script to bootstrap all services.
 
 Consider this setup.
 
-``` 
+```bash
  .docker/
-    |__ deploy.sh
-    |__ docker-compose.yml
-    |__ Dockerfile
+    |__ deploy.sh           # production only
+    |__ Dockerfile          # production only
+    |__ docker-compose.yml  # development only
 
   app/
    |__ ...
 ```
 
-A good idea is to have a `deploy.sh` script. 
+A good idea is to have a `deploy.sh` script to run any aditional commands before container startup on target deployment platform.
 
 ```bash
 #!/bin/sh
@@ -156,6 +157,14 @@ RUN chmod a+x .docker/deploy.sh
 # Run deployment tasks before start services
 CMD ["/bin/sh", "-c", ".docker/deploy.sh && /usr/local/bin/start"] 
 ```
+
+### Container role
+
+It really depends on platform you will deploy. All you need is to set an environment variable to container.
+
+- CONTAINER_ROLE=APP (default, no need to set)
+- CONTAINER_ROLE=JOBS
+- CONTAINER_ROLE=ALL
 
 ## Gitlab example
 
