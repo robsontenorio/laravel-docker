@@ -7,7 +7,7 @@ echo -e "
 
 *********************************************************************************
 
-==> Starting \"tjdft/laravel\" image for CONTAINER_ROLE = \"$role\" ...
+==> Starting \"robsontenorio/laravel\" image for CONTAINER_ROLE = \"$role\" ...
 
   APP (default)    => App webserver (nginx + php-fpm).
   JOBS             => Queued jobs + scheduled commands (schedule:run).
