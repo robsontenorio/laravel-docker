@@ -2,24 +2,19 @@
     <img src="octopus.png">
 </div>
 
-# Multi-purpose Laravel Docker Image
+# Laravel Docker Image
 
-When running services through separated containers you must keep same application codebase for each one. Instead of building a specific image for each service, why not a single flexible image that uses same app codebase?
+It provides a flexible strategy to assign roles to specific containers by re-using same image.
+
+When handling massive amount of process the best option is to split into multiple containers. This way, each container has a specific role on servers and you can scale it independently.
 
 ## Features
 
-- Non-root user. 
-    - This image runs as `appuser`.
-    - Default workdir `/var/www/app`
-- Supervisor
-    - All services are started through `supervisord`
+- Nginx
 - PHP
-    - FPM    
-    - Commom extensions
+    - FPM and common extensions
     - Composer
     - Laravel Installer    
-    - Laravel Dusk support (Chromium)
-- Nginx
 - Node
     - Yarn
     - Npm
@@ -27,31 +22,51 @@ When running services through separated containers you must keep same applicatio
     - Mysql 
     - Postgres 
     - Sqlite
-    - Oracle (12c)
-    - Intersystem Cachè (2018)
+- Supervisor
+   - All services are started through `supervisord`
+- Extra
+   - Zsh
+   - Git
+   - And more ...
 
-## Environment variables
+## Container role
 
-### CONTAINER_ROLE
+Assign specific role to a container.
+**Laravel Horizon is mandatory for JOB or ALL roles.**
 
-Manages role assigned to each container.
 
-| Value           | Description |
-| --------------- | ----------- |
-| APP (default)   | App webserver (nginx + php-fpm).   
-| JOBS            | Queued jobs + scheduled commands. 
-| ALL             | APP + JOBS
+| Value             | Description |
+| ---------------   | ----------- |
+| APP *(default)*   | App webserver (nginx + php-fpm).   
+| JOBS              | Queued jobs + scheduled commands. 
+| ALL               | All in one. 
 
-**NOTE: Laravel Horizon mandatory for jobs.**
-
-### Others
+### Optional
 
 | Key                         | Description |
 | --------------------------- | ----------- |
 | GITHUB_OAUTH_KEY            | Needed due to github rate limit |
 
 
-## Usage samples
+## Local development
+
+When you need to handle queued jobs and scheduled commands set `CONTAINER_ROLE=ALL`
+
+```yaml
+# docker-compose.yml
+
+services:
+  app:
+    image: robsontenorio/laravel    
+    environment:
+      - CONTAINER_ROLE=ALL
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 8080:8080
+
+    # Other services  here like mysql, redis ...
+```
 
 If you **DO NOT** need to handle any queued jobs or scheduled commands use this.
 As default is `CONTAINER_ROLE=APP` nothing need to be set. 
@@ -59,82 +74,50 @@ As default is `CONTAINER_ROLE=APP` nothing need to be set.
 ```yaml
 # docker-compose.yml
 
-version: "3"
-
 services:
-  ######## APP ########
   app:
-    image: nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]     
+    image: robsontenorio/laravel     
     volumes:
-      - .:/var/www/app:cached      
+      - .:/var/www/html
     ports:
       - 8080:8080
 
-    # Other services like mysql, redis ...
+    # Other services here like mysql, redis ...
 ```
 
-When you need to handle queued jobs and scheduled commands, for simple apps. Set `CONTAINER_ROLE=ALL`
-
-```yaml
-# docker-compose.yml
-
-version: "3"
-
-services:
-  ######## APP ########
-  app:
-    image: nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]    
-    environment:
-      - CONTAINER_ROLE=ALL
-    volumes:
-      - .:/var/www/app:cached      
-    ports:
-      - 8080:8080
-
-    # Other services like mysql, redis ...
-```
 
 Split into multiple containers for large scale apps.
 
 ```yaml
 # docker-compose.yml
 
-version: "3"
-
 services:
-  ######## APP ########
   app:
-    image: nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]
+    image: robsontenorio/laravel
     environment:
         - CONTAINER_ROLE=APP
     volumes:
-      - .:/var/www/app:cached      
+      - .:/var/www/html
     ports:
       - 8080:8080
 
- ######## JOBS ########
   jobs:
-    image: nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]
+    image: robsontenorio/laravel
     environment:
         - CONTAINER_ROLE=JOBS
     volumes:
-      - .:/var/www/app:cached      
+      - .:/var/www/html
 
  # Other services like mysql, redis ...
 ```
 
-## Split into services?
+## Deploy tasks
 
-When handling massive amount of process the best option is to split into multiple services. As this is image keep same app codebase for application, each container has a specific role on servers. This way you can scale it independently:
-
-- Webserver will be managed by `CONTAINER_ROLE=APP`
-- Queued jobs and scheduled commands by `CONTAINER_ROLE=JOBS`
-
-## Extended example
+This only applies if or deployment server is based on docker.
 
 This image relies on `/usr/local/bin/start`  script to bootstrap all services (see `start.sh`). If you need to run additional commands on container startup make sure to combine with a extra script.
 
-1. Consider this setup
+Consider this setup.
 
 ``` 
  .docker/
@@ -146,76 +129,71 @@ This image relies on `/usr/local/bin/start`  script to bootstrap all services (s
    |__ ...
 ```
 
-1. A good idea is to have a `deploy.sh` script. 
+A good idea is to have a `deploy.sh` script. 
 
 ```bash
 #!/bin/sh
 set -e
 
-echo '------ Start deploy tasks  ------'
+echo 'Starting deployment tasks ...'
 
 php artisan config:cache
-# more ...
+php artisan migrate --seed --force
 
-echo '------ Deploy completed ------'
+# more commands ...
+
+echo 'Done!'
 ```
 
-2. On `Dockerfile`
+So, on `Dockerfile`
 
 ```dockerfile
-FROM nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]
+FROM robsontenorio/laravel
 
-# Set owner when coping
-COPY --chown=appuser:appuser . .
-
-# Set execution permission
+COPY . .
 RUN chmod a+x .docker/deploy.sh
 
-# When container starts will run both commands
+# Run deployment tasks before start services
 CMD ["/bin/sh", "-c", ".docker/deploy.sh && /usr/local/bin/start"] 
 ```
 
-3. On `docker-compose.yml`.
+## Gitlab example
 
-```yml
-services:
-  ######## APP ########
-  laravel:
-    build:
-      context: ..
-      dockerfile: .docker/laravel/Dockerfile
-    volumes:
-      - ../:/var/www/app:cached
-    # Will override "CMD" instruction from Dockerfile
-    # No need to execute deploy task while developing locally
-    command: "/usr/local/bin/start"    
+```yaml
+image: robsontenorio/laravel  # <--- Will be used in all steps
+
+stages:
+  - build
+  - test
+  - deploy
+
+# Install PHP dependencies
+composer:  
+  stage: build
+  ...
+
+# Install JS dependencies
+yarn:  
+  stage: build  
+  ...
+
+# PHP tests
+phpunit:  
+  stage: test
+  dependencies:
+    - composer
+    - yarn    
+  ...
+
+
+# Build production final docker image and deploy it (optional)
+production:
+   stage: deploy
+   image: docker:latest
+   only:
+    - tags
+   script:
+    - docker login <credentials>
+    - docker build <path to Dockerfile>
+    - docker push <to some registry>
 ```
-
-## Overriding default settings
-
-Supervisor programs settings must be placed on `/etc/supervisor/conf.d/*` . While general supervisor settings must be placed on `/etc/supervisord.conf` 
- 
-```Dockerfile
-FROM nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]
-
-# override supervisord 
-COPY my-supervisord.conf /tmp/supervisor/supervisord.conf 
-
-# override specif program
-COPY my-laravel-job.conf /tmp/supervisor/conf.d/jobs.conf 
-
-```
-
-For other services like `nginx` and `php-fpm` you must place files on default paths like `/etc/nginx/nginx.conf`.
-
-```Dockerfile
-FROM nexuspull.tjdft.jus.br/tjdft/laravel:[TAG_NUMBER]
-
-COPY my-nginx.conf /etc/nginx/nginx.conf
-```
-> Tip: see folder `config/*`
-
-## TODO
-
-- [ ] Override php-fpm settings
-- [ ] Make Oracle/Cachè optional
