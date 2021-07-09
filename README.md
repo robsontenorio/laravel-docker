@@ -37,9 +37,9 @@ Assign specific role to a container.
 
 | Value             | Description |
 | ---------------   | ----------- |
-| APP *(default)*   | App webserver (nginx + php-fpm).   
-| JOBS              | Queued jobs + scheduled commands. 
-| ALL               | All in one. 
+| APP *(default)*   | php-fpm + nginx  
+| JOBS              | php-fpm + horizon queue + scheduler 
+| ALL               | all in one
 
 ### Optional
 
@@ -50,12 +50,13 @@ Assign specific role to a container.
 
 ## Local development
 
-When you need to handle queued jobs and scheduled commands set `CONTAINER_ROLE=ALL`
+`CONTAINER_ROLE=ALL` . This is the all in one strategy on same container.
 
 ```yaml
 # docker-compose.yml
 
 services:
+  # nginx + php-fpm + horizon queue + scheduler
   app:
     image: robsontenorio/laravel    
     environment:
@@ -68,30 +69,13 @@ services:
     # Other services  here like mysql, redis ...
 ```
 
-If you **DO NOT** need to handle any queued jobs or scheduled commands use this.
-As default is `CONTAINER_ROLE=APP` nothing need to be set. 
+Split into multiple containers.
 
 ```yaml
 # docker-compose.yml
 
 services:
-  app:
-    image: robsontenorio/laravel     
-    volumes:
-      - .:/var/www/html
-    ports:
-      - 8080:8080
-
-    # Other services here like mysql, redis ...
-```
-
-
-Split into multiple containers for large scale apps.
-
-```yaml
-# docker-compose.yml
-
-services:
+  # php-fpm + nginx
   app:
     image: robsontenorio/laravel
     environment:
@@ -100,7 +84,8 @@ services:
       - .:/var/www/html
     ports:
       - 8080:8080
-
+ 
+  # php-fpm + horizon queue + scheduler
   jobs:
     image: robsontenorio/laravel
     environment:
