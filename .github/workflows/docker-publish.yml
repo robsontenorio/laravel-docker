@@ -33,7 +33,7 @@ jobs:
           images: robsontenorio/laravel
           tags: |
             type=ref,event=tag
-            type=match,pattern=master,value=latest
+            type=match,pattern=master,group=1,value=latest
 
       - name: Build and push
         uses: docker/build-push-action@v2
