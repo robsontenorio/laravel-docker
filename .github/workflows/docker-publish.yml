@@ -26,23 +26,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - uses: olegtarasov/get-tag@v2.1
-        id: tagName
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: robsontenorio/laravel
 
       - name: Build and push LATEST
         uses: docker/build-push-action@v2
-        if: github.ref == 'refs/heads/master'
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: robsontenorio/laravel
-
-      - name: Build and push TAG ${{ steps.tagName.outputs.tag }}
-        uses: docker/build-push-action@v2
-        if: github.ref != 'refs/heads/master'
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: robsontenorio/laravel:${{ steps.tagName.outputs.tag }}
+          tags: ${{ steps.meta.outputs.tags }}
