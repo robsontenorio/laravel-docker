@@ -33,7 +33,7 @@ jobs:
           images: robsontenorio/laravel
           tags: |
             type=ref,event=tag
-            type=raw,enable=${{ github.ref == 'refs/heads/master') }},value=latest
+            type=raw,enable=${{ github.ref == 'refs/heads/master' }},value=latest
 
       - name: Build and push
         uses: docker/build-push-action@v2
