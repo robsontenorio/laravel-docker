@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="octopus.png">
+  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/master/octopus.png">
 </p> 
 <p align="center">    
   <img src="https://img.shields.io/docker/v/robsontenorio/laravel?color=green&sort=semver&style=for-the-badge" />
