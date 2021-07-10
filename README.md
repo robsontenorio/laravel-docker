@@ -1,18 +1,11 @@
-<div align="center">
-    <img src="octopus.png">
-
-<br><br>
-
-<img src="https://img.shields.io/docker/v/robsontenorio/laravel?color=green&style=for-the-badge" />
-
-<img src="https://img.shields.io/docker/pulls/robsontenorio/laravel?color=orange&style=for-the-badge" />
-
-<img src="https://img.shields.io/docker/image-size/robsontenorio/laravel?sort=date&style=for-the-badge" />
-
-<br><br>
-</div>
-
-
+<p align="center">
+  <img src="octopus.png">
+</p> 
+<p align="center">    
+  <img src="https://img.shields.io/docker/v/robsontenorio/laravel?color=green&style=for-the-badge" />
+  <img src="https://img.shields.io/docker/pulls/robsontenorio/laravel?color=orange&style=for-the-badge" />
+  <img src="https://img.shields.io/docker/image-size/robsontenorio/laravel?sort=date&style=for-the-badge" />
+</p>
 
 # Laravel Docker Image
 
