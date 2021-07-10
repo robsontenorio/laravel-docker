@@ -35,6 +35,7 @@ jobs:
           tags: |
             type=ref,event=tag
             type=raw,enable=${{ github.ref == 'refs/heads/master' }},value=latest
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
