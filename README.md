@@ -196,3 +196,7 @@ production:
     - docker build <path to Dockerfile>
     - docker push <to some registry>
 ```
+
+## Cypress
+
+Need e2e tests with Cypress? See [robsontenorio/laravel-docker-cypress](https://github.com/robsontenorio/laravel-docker-cypress)
