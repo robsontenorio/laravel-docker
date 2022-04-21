@@ -30,4 +30,4 @@ elif [ "$role" = "ALL" ]; then
     cp jobs.conf ../conf.d/jobs.conf
 fi
 
-supervisord 
+supervisord -c /etc/supervisord.conf

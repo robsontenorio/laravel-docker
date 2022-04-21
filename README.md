@@ -69,7 +69,7 @@ services:
     environment:
       - CONTAINER_ROLE=ALL
     volumes:
-      - .:/var/www/html
+      - .:/var/www/app
     ports:
       - 8080:8080
 
@@ -88,7 +88,7 @@ services:
     environment:
         - CONTAINER_ROLE=APP
     volumes:
-      - .:/var/www/html
+      - .:/var/www/app
     ports:
       - 8080:8080
  
@@ -98,7 +98,7 @@ services:
     environment:
         - CONTAINER_ROLE=JOBS
     volumes:
-      - .:/var/www/html
+      - .:/var/www/app
 
  # Other services like mysql, redis ...
 ```
