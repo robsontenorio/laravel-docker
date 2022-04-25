@@ -19,7 +19,7 @@ When handling massive amount of process the best option is to split into multipl
 
 - Nginx
 - PHP
-    - FPM and common extensions
+    - Swoole (Laravel Octane) and common extensions
     - Composer
     - Laravel Installer    
 - Node
@@ -39,23 +39,24 @@ When handling massive amount of process the best option is to split into multipl
 ## Container role
 
 Assign specific role to a container.
-**Laravel Horizon is mandatory for JOB or ALL roles.**
-
 
 | Value             | Description |
 | ---------------   | ----------- |
-| APP *(default)*   | php-fpm + nginx  
-| JOBS              | php-fpm + horizon queue + scheduler 
+| APP *(default)*   | octane + nginx  
+| JOBS              | octane + horizon queue + scheduler 
 | ALL               | all in one
 
-### Optional
+> **Laravel Octane is mandatory! <br> After install `laravel/octane` package rebuild containers.**
 
-| Key                         | Description |
-| --------------------------- | ----------- |
-| GITHUB_OAUTH_KEY            | Needed due to github rate limit |
-
+> **Laravel Horizon is mandatory for JOB or ALL roles! <br> After install `laravel/horizon` package rebuild containers.**
 
 ## Local development
+
+By default container is set to run in `production`. 
+
+While **developing locally** set container environment var `DEV_MODE = true` and `yarn add --save-dev` to your project,  to properly reload Octate workers every time you change files.
+
+
 
 `CONTAINER_ROLE=ALL` . This is the all in one strategy on same container.
 
@@ -63,11 +64,12 @@ Assign specific role to a container.
 # docker-compose.yml
 
 services:
-  # nginx + php-fpm + horizon queue + scheduler
+  # nginx + octane + horizon queue + scheduler
   app:
     image: robsontenorio/laravel    
     environment:
       - CONTAINER_ROLE=ALL
+      - DEV_MODE=TRUE   # <---- MAKE SURE TO DO THIS LOCALLY ONLY.
     volumes:
       - .:/var/www/app
     ports:
@@ -82,17 +84,18 @@ Split into multiple containers.
 # docker-compose.yml
 
 services:
-  # php-fpm + nginx
+  # octane + nginx
   app:
     image: robsontenorio/laravel
     environment:
         - CONTAINER_ROLE=APP
+        - DEV_MODE=TRUE   # <---- MAKE SURE TO DO THIS LOCALLY ONLY.
     volumes:
       - .:/var/www/app
     ports:
       - 8080:8080
  
-  # php-fpm + horizon queue + scheduler
+  # octane + horizon queue + scheduler
   jobs:
     image: robsontenorio/laravel
     environment:
