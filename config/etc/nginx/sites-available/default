@@ -47,7 +47,7 @@ server {
         proxy_pass http://0.0.0.0:8000$suffix;
     }
 
-    location ~* \.(ico|css|js|gif|jpeg|jpg|png|woff|ttf|otf|svg|woff2|eot)$ {
+    location ~* \.(ico|css|js|gif|jpeg|jpg|png|webP|woff|ttf|otf|svg|woff2|eot)$ {
         expires 5d;
     }
 
