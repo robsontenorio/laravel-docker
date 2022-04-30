@@ -16,6 +16,6 @@ sed -i '' "s/{{APP_NAME}}/$app_name/" "$app_name/.devcontainer/devcontainer.json
 if [ ! -f composer.json ]
 then
     echo "Creating a new Laravel project ..."
-    docker run --rm -v "$(pwd)/$app_name":/var/www/app robsontenorio/laravel:octane zsh -c "create.sh"
+    docker run --rm -v "$(pwd)/$app_name":/var/www/app robsontenorio/laravel:octane sh -c "/var/www/app/create.sh"
     echo "==> Done! Open this project on VSCode with remote containers extension."
 fi
