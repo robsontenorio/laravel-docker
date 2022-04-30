@@ -9,53 +9,19 @@
   </a>
 </p>
 
-# Laravel Docker Image (Swoole + Octane)
+# Laravel Docker Image
 
 It provides a flexible strategy to assign roles to specific containers by re-using same image.
 
-When handling massive amount of process the best option is to split into multiple containers. This way, each container has a specific role on servers and you can scale independently.
-
-## Quick start
-
-1. Download and run template.
-```
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robsontenorio/laravel-docker/go.sh)"
-
-sh -c "$(curl -fsSL file:///../dev/robsontenorio/laravel-docker/go.sh)"
-
-```
-1. Choose project name.
-1. Open in VSCODE (with Remote Container extension).
-1. **Done!** Go to http://localhost:8017
-
-## What?
-
-On first run at VSCODE remote containers it will install a fresh new Laravel project (octane + postgres + redis), **if it does not exists**.
-
-```bash
-|
-.devcontainer/
-|   |__ devcontainer.json  
-|    
-.docker/
-|  |__ deploy.sh           
-|  |__ Dockerfile          
-|  |__ docker-compose.yml  
-|
-|
-... a fresh laravel app here
-
-
-```
-
-
+When handling massive amount of process the best option is to split into multiple containers. This way, each container has a specific role on servers and you can scale it independently.
 
 ## Features
 
 - Nginx
 - PHP
-    - Swoole (Laravel Octane) and common extensions
+    - FPM and common extensions
     - Composer
+    - Laravel Installer    
 - Node
     - Yarn
     - Npm
@@ -73,50 +39,60 @@ On first run at VSCODE remote containers it will install a fresh new Laravel pro
 ## Container role
 
 Assign specific role to a container.
-
-| Value             | Description |  Requirements |
-| ---------------   | ----------- | ------------- |
-| APP *(default)*   | octane + nginx  | `laravel/octane` package |
-| JOBS              | octane + horizon | `laravel/horizon` package |
-| ALL               | octane + horizon + nginx | `laravel/octane` + `laravel/horizon`
+**Laravel Horizon is mandatory for JOB or ALL roles.**
 
 
+| Value             | Description |
+| ---------------   | ----------- |
+| APP *(default)*   | php-fpm + nginx  
+| JOBS              | php-fpm + horizon queue + scheduler 
+| ALL               | all in one
 
-###  All in same container.
+### Optional
 
-```yaml
-# docker-compose.yml
-
-services:  
-  app:
-    image: robsontenorio/laravel:octane    
-    environment:
-      - CONTAINER_ROLE=ALL    # <---- nginx + octane + horizon 
-    volumes:
-      - .:/var/www/app
-    ports:
-      - 8017:8080
-
-    # Other services ...
-```
+| Key                         | Description |
+| --------------------------- | ----------- |
+| GITHUB_OAUTH_KEY            | Needed due to github rate limit |
 
 
-### Split into multiple containers.
+## Local development
+
+`CONTAINER_ROLE=ALL` . This is the all in one strategy on same container.
 
 ```yaml
 # docker-compose.yml
 
 services:
+  # nginx + php-fpm + horizon queue + scheduler
   app:
-    image: robsontenorio/laravel:octane
+    image: robsontenorio/laravel    
     environment:
-        - CONTAINER_ROLE=APP   # <---- octane + nginx
+      - CONTAINER_ROLE=ALL
     volumes:
       - .:/var/www/app
     ports:
-      - 8017:8080
+      - 8080:8080
+
+    # Other services  here like mysql, redis ...
+```
+
+Split into multiple containers.
+
+```yaml
+# docker-compose.yml
+
+services:
+  # php-fpm + nginx
+  app:
+    image: robsontenorio/laravel
+    environment:
+        - CONTAINER_ROLE=APP
+    volumes:
+      - .:/var/www/app
+    ports:
+      - 8080:8080
  
-  # octane + horizon 
+  # php-fpm + horizon queue + scheduler
   jobs:
     image: robsontenorio/laravel
     environment:
@@ -127,48 +103,65 @@ services:
  # Other services like mysql, redis ...
 ```
 
-## Local development
-
-By default container is set to run in `production` and Octane will not watch for file changes.
-
-While developing locally:
-- Set build target to `local` (see `Dockerifle`)
-- Set container environment var `DEV_MODE = true`
-- You **must**  `yarn add --save-dev` to your project (octane watch mode)
-
-```yaml
-# docker-compose.yml
-
-services:
-  app:
-    image: robsontenorio/laravel:octane
-    build:
-      context: ..
-      dockerfile: .docker/Dockerfile
-      target: local           # <---- LOCALLY ONLY (multi stage build).
-    environment:
-        - CONTAINER_ROLE=APP   
-        - DEV_MODE=TRUE        # <---- LOCALLY ONLY (octane watch mode).
-    volumes:
-      - .:/var/www/app
-    ports:
-      - 8017:8080
-```
-
-
 
 ## Production
 
-A typical build for production look like this, considering current Dockerfile path is `.docker/Dockerfile`
+This only applies if your deployment platform is based on docker. 
+
+This image relies on `/usr/local/bin/start`  script to bootstrap all services.
+
+Consider this setup.
 
 ```bash
-docker build -t myapp:tag --target production --file .docker/Dockerfile . # <-- a dot "." here
+ .docker/
+    |__ deploy.sh           # production only
+    |__ Dockerfile          # production only
+    |__ docker-compose.yml  # development only
+
+  app/
+   |__ ...
 ```
+
+A good idea is to have a `deploy.sh` script to run any aditional commands before container startup on target deployment platform.
+
+```bash
+#!/bin/sh
+set -e
+
+echo 'Starting deployment tasks ...'
+
+php artisan config:cache
+php artisan migrate --seed --force
+
+# more commands ...
+
+echo 'Done!'
+```
+
+So, on `Dockerfile`
+
+```dockerfile
+FROM robsontenorio/laravel
+
+COPY . .
+RUN chmod a+x .docker/deploy.sh
+
+# Run deployment tasks before start services
+CMD ["/bin/sh", "-c", ".docker/deploy.sh && /usr/local/bin/start"] 
+```
+
+### Container role
+
+It really depends on platform you will deploy. All you need is to set an environment variable to container.
+
+- CONTAINER_ROLE=APP (default, no need to set)
+- CONTAINER_ROLE=JOBS
+- CONTAINER_ROLE=ALL
 
 ## Gitlab example
 
 ```yaml
-image: robsontenorio/laravel:octane  # <--- Will be used in all steps
+image: robsontenorio/laravel  # <--- Will be used in all steps
 
 stages:
   - build
@@ -178,14 +171,12 @@ stages:
 # Install PHP dependencies
 composer:  
   stage: build
-  script:
-    - ...
+  ...
 
 # Install JS dependencies
 yarn:  
   stage: build  
-  script:
-    - ...
+  ...
 
 # PHP tests
 phpunit:  
@@ -193,8 +184,7 @@ phpunit:
   dependencies:
     - composer
     - yarn    
-  script:
-    - ...
+  ...
 
 
 # Build production final docker image and deploy it (optional)
@@ -205,7 +195,7 @@ production:
     - tags
    script:
     - docker login <credentials>
-    - docker build <args>
+    - docker build <path to Dockerfile>
     - docker push <to some registry>
 ```
 
