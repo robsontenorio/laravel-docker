@@ -7,6 +7,7 @@ ENV TZ=UTC
 ENV LANG="C.UTF-8"
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV CONTAINER_ROLE=${CONTAINER_ROLE:-APP} 
+ENV DEV_MODE=${DEV_MODE:-FALSE} 
 
 WORKDIR /var/www/app
 
@@ -18,13 +19,13 @@ RUN apt update \
   php8.1-bcmath \
   php8.1-cli \
   php8.1-curl \
-  php8.1-fpm \
   php8.1-gd \
   php8.1-mbstring  \ 
   php8.1-mysql \  
   php8.1-redis \  
   php8.1-sockets \  
   php8.1-sqlite3 \  
+  php8.1-swoole \
   php8.1-pcov \
   php8.1-pgsql \
   php8.1-opcache \
@@ -54,21 +55,17 @@ RUN useradd -u 1000 -m -d /home/appuser -g appuser appuser
 # Config files
 COPY --chown=appuser:appuser start.sh /usr/local/bin/start
 COPY --chown=appuser:appuser config/etc /etc
-COPY --chown=appuser:appuser config/etc/php/8.1/cli/conf.d/y-php.ini /etc/php/8.1/fpm/conf.d/y-php.ini
 
 # Permissions for start script
 RUN chmod a+x /usr/local/bin/start 
 
-# Required for php-fpm and nginx as non-root user
+# Required for nginx as non-root user
 RUN mkdir -p /run/php 
-RUN chown -R appuser:appuser /var/www/app /var/log /var/lib /run
+RUN chown -R appuser:appuser /var/www/app /var/log /var/lib 
 RUN chmod -R 777 /var/log /var/lib /run
 
 # Switch to non-root user
 USER appuser
-
-# Laravel Installer 
-RUN composer global require laravel/installer && composer clear-cache    
 
 # OhMyZsh (better than "bash")
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" 

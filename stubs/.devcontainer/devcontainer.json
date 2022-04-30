@@ -1,0 +1,20 @@
+{
+	"name": "{{APP_NAME}}",
+	"dockerComposeFile": "../.docker/docker-compose.yml",
+	"service": "{{APP_NAME}}-app",
+	"workspaceFolder": "/var/www/app",
+	"remoteUser": "appuser",
+	"settings": {
+		"terminal.integrated.defaultProfile.linux": "zsh",	
+		"[php]": {
+			"editor.defaultFormatter": "junstyle.php-cs-fixer",
+		},
+		"php-cs-fixer.executablePath": "/var/www/app/vendor/bin/php-cs-fixer",
+		"php-cs-fixer.config": "/var/www/app/.php-cs-fixer.php",
+		"php-cs-fixer.onsave": true
+	},
+	"extensions": [
+		"bmewburn.vscode-intelephense-client",
+		"junstyle.php-cs-fixer"
+	],
+}
