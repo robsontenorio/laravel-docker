@@ -1,5 +1,7 @@
 #!/usr/bin/zsh
 
+printf "\n\nCreating ${APP_NAME} ...\n\n"
+
 composer create-project laravel/laravel example-app         # new laravel project on folder "example-app"
 mv example-app/*(DN) .                                      # move that fold to root directory
 rm -rf example-app/                                         # Remove folder
