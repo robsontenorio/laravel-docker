@@ -17,7 +17,7 @@ When handling massive amount of process the best option is to split into multipl
 
 ## Quick start
 
-1. Download and run template.
+1. Run!
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robsontenorio/laravel-docker/octane/go.sh)"
 
