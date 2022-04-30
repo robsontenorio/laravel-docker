@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-git clone https://github.com/robsontenorio/laravel-docker.git
+git clone https://github.com/robsontenorio/octane/laravel-docker.git
 
 read -p "App name: " app_name
 
@@ -17,3 +17,5 @@ sed -i '' "s/{{APP_NAME}}/$app_name/" $devcontainer
 touch "readme.txt"
 echo "Open this folder on VSCODE with Remote Container extension. The are hidden folders." >> "$app_name/readme.txt"
 echo "==> Done! Open this project on VSCODE with Remote Container extension."
+
+# rm -rf laravel-docker/
