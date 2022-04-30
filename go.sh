@@ -12,6 +12,8 @@ rm -rf laravel-docker/
 sed -i '' "s/{{APP_NAME}}/$app_name/" "$app_name/.docker/docker-compose.yml"
 sed -i '' "s/{{APP_NAME}}/$app_name/" "$app_name/.devcontainer/devcontainer.json"
 
+chmod 777 "$app_name/create.sh"
+
 # Sping up new laravel project (if it does not exist).
 if [ ! -f composer.json ]
 then
