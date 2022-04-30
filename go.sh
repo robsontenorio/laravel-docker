@@ -21,5 +21,5 @@ then
     printf "\n\nCreating a new Laravel project ...\n\n"
     docker run --rm -v "$(pwd)/$app_name":/var/www/app robsontenorio/laravel:octane sh -c "/var/www/app/create.sh"
     rm "$app_name/create.sh"
-    echo "==> Done! Open this project on VSCode with remote containers extension."
+    printf "\n\n\n\n==> Done! Open this project on VSCode with remote containers extension."
 fi
