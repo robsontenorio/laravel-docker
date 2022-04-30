@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 
-composer create-project laravel/laravel example-app         # new laravel project
-mv example-app/*(DN) .                                      # move to parent directory
+composer create-project laravel/laravel example-app         # new laravel project on folder "example-app"
+mv example-app/*(DN) .                                      # move that fold to root directory
 rm -rf example-app/                                         # Remove folder
 composer require laravel/octane                             # require octane dependency
 php artisan octane:install --server=swoole                  # install octane with swoole

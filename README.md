@@ -29,7 +29,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robsontenorio/laravel-dock
 
 ## What?
 
-On first run at VSCODE remote containers it will install a fresh new Laravel project (octane + postgres + redis), **if it does not exists**.
+On first run at VSCODE remote containers it will install a fresh new Laravel project (octane + postgres + redis) with following structure.
 
 ```bash
 |
