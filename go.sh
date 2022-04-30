@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-git clone https://github.com/robsontenorio/octane/laravel-docker.git
+git clone -b octane --single-branch https://github.com/robsontenorio/laravel-docker.git
 
 read -p "App name: " app_name
 
