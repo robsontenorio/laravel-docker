@@ -19,5 +19,5 @@ sed -i '' "s/{{APP_NAME}}/$app_name/" $devcontainer
 if [ ! -f composer.json ]
 then
     echo "Creating a new Laravel project ..."
-    docker run --rm -v "$(pwd)":/var/www/app robsontenorio/laravel:octane \bash -c "create.sh"
+    docker run --rm -v "$(pwd)":/var/www/app robsontenorio/laravel:octane zsh -c "create.sh"
 fi
