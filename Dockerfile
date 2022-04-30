@@ -67,9 +67,6 @@ RUN chmod -R 777 /var/log /var/lib /run
 # Switch to non-root user
 USER appuser
 
-# Laravel Installer 
-RUN composer global require laravel/installer && composer clear-cache    
-
 # OhMyZsh (better than "bash")
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" 
 
