@@ -16,7 +16,6 @@ services:
     environment:
       - CONTAINER_ROLE=APP    
       - DEV_MODE=TRUE
-      - APP_NAME={{APP_NAME}}
     volumes:
       - ../:/var/www/app:cached
     ports:

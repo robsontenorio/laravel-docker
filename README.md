@@ -23,6 +23,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robsontenorio/laravel-dock
 
 ```
 1. Choose project name.
+1. Wait install all dependencies.
 1. Open in VSCODE (with Remote Container extension).
 1. **Done!** Go to http://localhost:8017
 
