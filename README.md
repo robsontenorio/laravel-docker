@@ -19,9 +19,7 @@ When handling massive amount of process the best option is to split into multipl
 
 1. Download and run template.
 ```
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robsontenorio/laravel-docker/go.sh)"
-
-sh -c "$(curl -fsSL file:///../dev/robsontenorio/laravel-docker/go.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robsontenorio/laravel-docker/octane/go.sh)"
 
 ```
 1. Choose project name.
