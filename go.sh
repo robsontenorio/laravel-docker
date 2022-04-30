@@ -7,6 +7,7 @@ read -p "App name: " app_name
 
 mkdir $app_name
 cp -r "laravel-docker/stubs/." $app_name
+rm -rf laravel-docker/
 
 dockercompose="$app_name/.docker/docker-compose.yml"
 devcontainer="$app_name/.devcontainer/devcontainer.json"
@@ -14,8 +15,9 @@ devcontainer="$app_name/.devcontainer/devcontainer.json"
 sed -i '' "s/{{APP_NAME}}/$app_name/" $dockercompose
 sed -i '' "s/{{APP_NAME}}/$app_name/" $devcontainer
 
-touch "readme.txt"
-echo "Open this folder on VSCODE with Remote Container extension. The are hidden folders." >> "$app_name/readme.txt"
-echo "==> Done! Open this project on VSCODE with Remote Container extension."
-
-# rm -rf laravel-docker/
+# Sping up new laravel project (if it does not exist).
+if [ ! -f composer.json ]
+then
+    echo "Creating a new Laravel project ..."
+    docker run --rm -v "$(pwd)":/var/www/app robsontenorio/laravel:octane \bash -c "create.sh"
+fi
