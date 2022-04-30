@@ -1,6 +1,5 @@
 #!/usr/bin/zsh
 
-
 composer create-project laravel/laravel example-app         # new laravel project
 mv example-app/*(DN) .                                      # move to parent directory
 rm -rf example-app/                                         # Remove folder

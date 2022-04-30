@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -e
+#!/usr/bin/zsh
 
 git clone -b octane --single-branch https://github.com/robsontenorio/laravel-docker.git
 
@@ -19,7 +18,7 @@ chmod a+x "$app_name/create.sh"
 if [ ! -f composer.json ]
 then
     printf "\n\nCreating a new Laravel project ...\n\n"
-    docker run --rm -v "$(pwd)/$app_name":/var/www/app robsontenorio/laravel:octane sh -c "/var/www/app/create.sh"
+    docker run --rm -v "$(pwd)/$app_name":/var/www/app robsontenorio/laravel:octane zsh -c "/var/www/app/create.sh"
     rm "$app_name/create.sh"
     printf "\n\n\n\n==> Done! Open this project on VSCode with remote containers extension."
 fi
