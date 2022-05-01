@@ -79,7 +79,8 @@ Assign specific role to a container.
 | JOBS              | octane + horizon | `laravel/horizon` package |
 | ALL               | octane + horizon + nginx | `laravel/octane` + `laravel/horizon`
 
-> **Laravel Horizon is mandatory for JOB or ALL roles! <br> After install `laravel/horizon` package rebuild containers.**
+:warning: Laravel Horizon is mandatory for "JOB" or "ALL" roles. <br>
+ After install `laravel/horizon` package rebuild containers.
 
 
 ###  All in same container.
@@ -114,13 +115,11 @@ services:
     volumes:
       - .:/var/www/app
     ports:
-      - 8017:8080
- 
-  # octane + horizon 
+      - 8017:8080  
   jobs:
     image: robsontenorio/laravel
     environment:
-        - CONTAINER_ROLE=JOBS
+        - CONTAINER_ROLE=JOBS  # <---- octane + horizon 
     volumes:
       - .:/var/www/app
 
@@ -132,9 +131,9 @@ services:
 By default container is set to run in `production` and Octane will not watch for file changes.
 
 While developing locally:
-- Set build target to `local` (see `Dockerifle`)
-- Set container environment var `DEV_MODE = true`
-- You **must**  `yarn add --save-dev` to your project (octane watch mode)
+- Set build target to `local` (see Dockerifle)
+- Set container environment var `DEV_MODE = true` (octane watch mode)
+- And `yarn add --save-dev` to your project (octane watch mode)
 
 ```yaml
 # docker-compose.yml
