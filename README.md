@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/master/octopus.png">
+  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/octane/octopus.png">
 </p> 
 <p align="center">    
   <a href="https://hub.docker.com/r/robsontenorio/laravel">
