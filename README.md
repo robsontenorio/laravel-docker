@@ -79,7 +79,7 @@ Assign specific role to a container.
 | JOBS              | octane + horizon | `laravel/horizon` package |
 | ALL               | octane + horizon + nginx | `laravel/octane` + `laravel/horizon`
 
-:warning: Laravel Horizon is mandatory for "JOB" or "ALL" roles. <br>
+:warning: Laravel Horizon is mandatory for "JOB" or "ALL" roles. 
  After install `laravel/horizon` package rebuild containers.
 
 
