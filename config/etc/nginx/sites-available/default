@@ -2,47 +2,43 @@ server {
     listen [::]:8080 default_server;
     listen 8080 default_server;
     server_name _;
-
-    # sendfile off;
-    client_max_body_size 16m;
-
+    
     root /var/www/app/public;
     index index.php index.html;
 
+    charset utf-8;
+    client_max_body_size 16m;
+
+    error_page 404 /index.php;
+    
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+ 
+    # Default
     location / {
-        # First attempt to serve request as file, then
-        # as directory, then fall back to index.php
         try_files $uri $uri/ /index.php?$query_string;
     }
 
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-        root /var/lib/nginx/html;
+    # Prevent cache JS for livewire routes, and make it as a normal route    
+    location ^~ /livewire {
+        try_files $uri $uri/ /index.php?$query_string;
     }
 
-    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-    #
+    # PHP
     location ~ \.php$ {
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass  unix:/home/appuser/php8.2-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param SCRIPT_NAME $fastcgi_script_name;
-        fastcgi_index index.php;
+        fastcgi_pass unix:/home/appuser/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
-
-    location ~* \.(ico|css|js|gif|jpeg|jpg|png|woff|ttf|otf|svg|woff2|eot)$ {
-        expires 5d;
+ 
+    # Prevent access "." files
+    location ~ /\.(?!well-known).* {
+        deny all;
     }
 
-    # deny access to . files, for security
-    #
-    location ~ /\. {
-        log_not_found off;
-        deny all;
+    # Cache 
+    location ~* \.(ico|css|js|gif|jpeg|jpg|png|woff|ttf|otf|svg|woff2|eot)$ {
+        expires 5d;
     }
 
     # Enable gzip
