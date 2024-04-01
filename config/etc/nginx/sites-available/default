@@ -17,9 +17,8 @@ server {
     # Default
     location / {
         try_files $uri $uri/ /index.php?$query_string;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Proto $scheme;
 
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
     # Prevent cache JS for livewire routes, and make it as a normal route    
