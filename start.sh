@@ -21,6 +21,7 @@ cd /etc/supervisor/conf.d-temp
 if [ "$role" = "APP" ]; then
     cp nginx.conf ../conf.d/nginx.conf
     cp php-fpm.conf ../conf.d/php-fpm.conf
+    cp scheduler.conf ../conf.d/scheduler.conf
 elif [ "$role" = "JOBS" ]; then    
     cp php-fpm.conf ../conf.d/php-fpm.conf
     cp jobs.conf ../conf.d/jobs.conf
@@ -28,6 +29,7 @@ elif [ "$role" = "ALL" ]; then
     cp nginx.conf ../conf.d/nginx.conf
     cp php-fpm.conf ../conf.d/php-fpm.conf
     cp jobs.conf ../conf.d/jobs.conf
+    cp scheduler.conf ../conf.d/scheduler.conf
 fi
 
 supervisord -c /etc/supervisord.conf
