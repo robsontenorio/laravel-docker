@@ -35,7 +35,8 @@ jobs:
           flavor: latest=false
           tags: |
             type=ref,event=tag
-            type=raw,enable=${{ github.ref == 'refs/heads/master' }},value=latest      
+            type=raw,enable=${{ github.ref == 'refs/heads/master' }},value=latest
+            type=raw,enable=${{ github.ref == 'refs/heads/root' }},value=root
       
       - name: Build and push
         uses: docker/build-push-action@v2
