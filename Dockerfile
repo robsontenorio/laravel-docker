@@ -11,26 +11,26 @@ ENV CONTAINER_ROLE=${CONTAINER_ROLE:-APP}
 WORKDIR /var/www/app
 
 RUN apt update \
-  # Add PHP 8.3 repository
+  # Add PHP 8.4 repository
   && apt install -y software-properties-common && add-apt-repository ppa:ondrej/php \
   # PHP extensions
   && apt install -y \
-  php8.3-bcmath \
-  php8.3-cli \
-  php8.3-curl \
-  php8.3-fpm \
-  php8.3-gd \
-  php8.3-intl \
-  php8.3-mbstring  \
-  php8.3-mysql \
-  php8.3-redis \
-  php8.3-sockets \
-  php8.3-sqlite3 \
-  php8.3-pcov \
-  php8.3-pgsql \
-  php8.3-opcache \
-  php8.3-xml \
-  php8.3-zip \
+  php8.4-bcmath \
+  php8.4-cli \
+  php8.4-curl \
+  php8.4-fpm \
+  php8.4-gd \
+  php8.4-intl \
+  php8.4-mbstring  \
+  php8.4-mysql \
+  php8.4-redis \
+  php8.4-sockets \
+  php8.4-sqlite3 \
+  php8.4-pcov \
+  php8.4-pgsql \
+  php8.4-opcache \
+  php8.4-xml \
+  php8.4-zip \
   # Extra
   curl \
   git \
@@ -59,7 +59,7 @@ RUN useradd -u 1000 -m -d /home/appuser -g appuser appuser
 # Config files
 COPY --chown=appuser:appuser start.sh /usr/local/bin/start
 COPY --chown=appuser:appuser config/etc /etc
-COPY --chown=appuser:appuser config/etc/php/8.3/cli/conf.d/y-php.ini /etc/php/8.3/fpm/conf.d/y-php.ini
+COPY --chown=appuser:appuser config/etc/php/8.4/cli/conf.d/y-php.ini /etc/php/8.4/fpm/conf.d/y-php.ini
 
 # Permissions for start script
 RUN chmod a+x /usr/local/bin/start

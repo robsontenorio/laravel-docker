@@ -26,7 +26,7 @@ server {
 
     # PHP
     location ~ \.php$ {
-        fastcgi_pass unix:/home/appuser/php8.3-fpm.sock;
+        fastcgi_pass unix:/home/appuser/php8.4-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
