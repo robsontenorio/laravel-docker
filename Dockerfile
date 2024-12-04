@@ -6,7 +6,8 @@ LABEL site="https://github.com/robsontenorio/laravel-docker"
 ENV TZ=UTC
 ENV LANG="C.UTF-8"
 ENV DEBIAN_FRONTEND=noninteractive
-ENV CONTAINER_ROLE=${CONTAINER_ROLE:-APP}
+ARG CONTAINER_ROLE=APP
+ENV CONTAINER_ROLE=${CONTAINER_ROLE}
 
 WORKDIR /var/www/app
 
@@ -52,9 +53,9 @@ RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin 
 # Node, NPM, Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
 
-# Create user/group with id/uid (1000/100)
-RUN groupadd -g 1000 appuser
-RUN useradd -u 1000 -m -d /home/appuser -g appuser appuser
+# Create user/group with id/uid (1001/1001)
+RUN groupadd -g 1001 appuser
+RUN useradd -u 1001 -m -d /home/appuser -g appuser appuser
 
 # Config files
 COPY --chown=appuser:appuser start.sh /usr/local/bin/start
@@ -88,4 +89,4 @@ RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.zshrc
 EXPOSE 8080 8000 3000 3001 9515 9773
 
 # Start services through "supervisor" based on "CONTAINER_ROLE". See "start.sh".
-CMD /usr/local/bin/start
+CMD ["/usr/local/bin/start"]
