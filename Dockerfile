@@ -53,9 +53,10 @@ RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin 
 # Node, NPM, Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
 
-# Create user/group with id/uid (1001/1001)
-RUN groupadd -g 1001 appuser
-RUN useradd -u 1001 -m -d /home/appuser -g appuser appuser
+# Create user/group with id/uid (1000/1000)
+RUN userdel ubuntu
+RUN groupadd -f -g 1000 appuser
+RUN useradd -u 1000 -m -d /home/appuser -g appuser appuser
 
 # Config files
 COPY --chown=appuser:appuser start.sh /usr/local/bin/start
