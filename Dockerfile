@@ -35,6 +35,7 @@ RUN apt update \
   # Extra
   curl \
   git \
+  gnupg \
   htop \
   nano \
   nginx \
