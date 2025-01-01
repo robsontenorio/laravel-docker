@@ -7,8 +7,8 @@ set -e
 
 apt install -y php8.4-dev unixodbc-dev
 
-curl -k https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
-curl -k https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+wget -qO- https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
 apt update
 ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18
 
