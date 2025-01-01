@@ -5,7 +5,7 @@ set -e
 #   SQLSERVER DRIVERS + TOOLS                    #
 ##################################################
 
-apt install -y php8.4-dev unixodbc-dev
+apt install -y php8.4-dev unixodbc-dev wget
 
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
 wget -qO- https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
