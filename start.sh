@@ -1,35 +1,12 @@
-#!/usr/bin/env bash
-set -e
+#!/usr/bin/zsh
 
-role=${CONTAINER_ROLE}
+error_msg() {
+  echo "\033[41;37m[ERROR] $1\033[0m\n"
+}
 
-echo -e " 
-
-*********************************************************************************
-
-==> Starting \"robsontenorio/laravel\" image for CONTAINER_ROLE = \"$role\" ...
-
-  APP (default)    => App webserver (nginx + php-fpm).
-  JOBS             => Queued jobs + scheduled commands (schedule:run).
-  ALL              => APP + JOBS
-
-*********************************************************************************
-
-"
-cd /etc/supervisor/conf.d-temp
-
-if [ "$role" = "APP" ]; then
-    cp nginx.conf ../conf.d/nginx.conf
-    cp php-fpm.conf ../conf.d/php-fpm.conf
-    cp scheduler.conf ../conf.d/scheduler.conf
-elif [ "$role" = "JOBS" ]; then    
-    cp php-fpm.conf ../conf.d/php-fpm.conf
-    cp jobs.conf ../conf.d/jobs.conf
-elif [ "$role" = "ALL" ]; then
-    cp nginx.conf ../conf.d/nginx.conf
-    cp php-fpm.conf ../conf.d/php-fpm.conf
-    cp jobs.conf ../conf.d/jobs.conf
-    cp scheduler.conf ../conf.d/scheduler.conf
+if [ ! -d "vendor/laravel/octane" ]; then
+  error_msg "Laravel Octane is not installed. Access the container, install it then rebuild."
+  exec frankenphp run /etc/caddy/Caddyfile
+else
+  php artisan octane:start
 fi
-
-supervisord -c /etc/supervisord.conf
