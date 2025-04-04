@@ -8,9 +8,9 @@
   </a>
 </p>
 
-# WIP - Laravel Docker (Octane)
+# WIP - Laravel Docker (Franken)
 
-Laravel Octane production ready image using **FrankenPHP**. 
+Laravel production ready image using **FrankenPHP in classic mode**. 
 
 ## Usage
 
@@ -28,19 +28,14 @@ Laravel Octane production ready image using **FrankenPHP**.
 **Dockerfile**
 
 ```Dockerfile
-# Base image
-FROM robsontenorio/laravel:franken AS base
-COPY . .
-
-# Development
-# The `--max-requests=1` makes Octane do not cache the code.  
-# The `--log-level` is optional
-FROM base AS local
-CMD php artisan octane:frankenphp --max-requests=1 --log-level=info || start
+# Base
+FROM robsontenorio/laravel:franken-classic AS base
+COPY --chown=appuser:appuser . .
 
 # Production
 FROM base AS deploy
-CMD ["/bin/sh", "-c", ".docker/deploy.sh"]
+RUN chmod a+x .docker/deploy.sh
+CMD ["/bin/sh", "-c", ".docker/deploy.sh && start"]
 ```
 
 **.docker/deploy.sh**
@@ -56,9 +51,9 @@ yarn install
 yarn build
 
 php artisan migrate --seed --force
+
 php artisan storage:link
 php artisan optimize
-php artisan octane:frankenphp --log-level=warning
 
 echo '------ Deploy completed ------'
 ```
@@ -67,13 +62,16 @@ echo '------ Deploy completed ------'
 **docker-compose.yml** (for local development only)
 ```yaml
 services:
-  app:
-    build:
-      context: ..
-      dockerfile: .docker/Dockerfile
-      target: local   # <-- runs the `local` stage instead of `deploy`.
-    volumes:
-      - ../:/app
-    ports:
-      - 8000:8000
+    my-app:
+        build:
+            context: ..
+            dockerfile: .docker/Dockerfile
+            target: base
+        environment:
+            - SERVER_NAME=:8217
+        tty: true
+        volumes:
+            - ../:/app:cached
+        ports:
+            - 8217:8217            
 ```

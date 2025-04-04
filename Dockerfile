@@ -35,6 +35,4 @@ USER appuser
 # OhMyZSH
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-EXPOSE 8000
-
 CMD ["start"]
