@@ -26,7 +26,7 @@ RUN chmod +x /usr/local/bin/start
 
 # Create non-root user
 RUN useradd -m -s /bin/zsh appuser && \
-	setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp && \
+    setcap -r /usr/local/bin/frankenphp && \
 	chown -R appuser:appuser /data/caddy && \
     chown -R appuser:appuser /config/caddy && \
     chown -R appuser:appuser /app
