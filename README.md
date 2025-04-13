@@ -8,7 +8,7 @@
   </a>
 </p>
 
-# WIP - Laravel Docker (Franken)
+# WIP - Laravel Docker (FrankenPHP)
 
 Laravel production ready image using **FrankenPHP in classic mode**. 
 

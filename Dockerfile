@@ -13,9 +13,8 @@ RUN apt update && \
 # PHP extensions
 RUN install-php-extensions gd intl opcache pcntl pcov pgsql redis sockets zip
 
-# Composer / Laravel Installer
-RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin --filename=composer && \
-    composer global require laravel/installer && composer clear-cache
+# Composer
+RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin --filename=composer    
 
 # Node, NPM, Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
@@ -36,6 +35,11 @@ USER appuser
 
 # OhMyZSH
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Laravel installer
+RUN COMPOSER_HOME=/home/appuser/.composer composer global require laravel/installer && \ 
+    composer clear-cache && \
+    echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.zshrc
 
 ENV SERVER_NAME=:8000
 
