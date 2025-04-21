@@ -5,13 +5,35 @@ LABEL site="https://github.com/robsontenorio/laravel-docker"
 
 # Linux packages
 RUN apt update && \
-    apt install -y git zsh unzip nano htop supervisor pass && \
-    apt-get purge -y --auto-remove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt install -y \
+        git \
+        zsh \
+        unzip \
+        nano \
+        htop \
+        supervisor \
+        pass \
+        default-mysql-client
 
 # PHP extensions
-RUN install-php-extensions gd intl opcache pcntl pcov pgsql redis sockets zip
+RUN install-php-extensions \
+    gd \
+    intl \
+    opcache \
+    pcntl \
+    pcov \
+    pdo_pgsql \
+    pdo_mysql \
+    redis \
+    sockets \
+    zip
+
+# Database extras
+COPY config/database.sh /tmp/database.sh
+RUN chmod +x /tmp/database.sh && /tmp/database.sh
+
+# PHP setting
+COPY config/php.ini "$PHP_INI_DIR/php.ini"
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin --filename=composer    
