@@ -19,7 +19,7 @@ This image automatically detects if your application is using Laravel Octane and
 Also included:
 - Schedule worker.
 - Laravel Horizon worker.
-- PostgreSQL and MySQL drivers and utilities.
+- PostgreSQL and MySQL drivers + cli tools.
 - Common PHP extensions.
 
 ## Usage
@@ -38,11 +38,11 @@ Also included:
 **Dockerfile**
 
 ```Dockerfile
-# Base stage for local development
+# Base stage
 FROM robsontenorio/laravel:franken AS base
 COPY --chown=appuser:appuser . .
 
-# Production stage with optimized settings
+# Production stage
 FROM base AS deploy
 ENV RUN_DEPLOY=true                               # Triggers `deploy.sh` execution
 CMD ["--max-requests=500", "--log-level=info"]    # Production Octane parameters
