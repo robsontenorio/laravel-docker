@@ -21,6 +21,8 @@ Also included:
 - Laravel Horizon worker.
 - PostgreSQL and MySQL drivers + cli tools.
 - Common PHP extensions.
+- Composer / Node / Yarn / NPM.
+- OhMyZSH terminal.
 
 ## Usage
 
@@ -38,38 +40,43 @@ Also included:
 **Dockerfile**
 
 ```Dockerfile
+# The default is  CMD["--max-requests=1"]
+# It will run `php artisan octane:start --max-requests=1`
+
+
 FROM robsontenorio/laravel:franken AS base
 COPY --chown=appuser:appuser . .
-# CMD ["--max-requests=1"] This is the default, you can remove this line.
+
 
 FROM base AS production
-ENV RUN_DEPLOY=true                               # Triggers `deploy.sh` execution.
-CMD ["--max-requests=500", "--log-level=info"]    # Pass extra parameters for Octane.
+ENV RUN_DEPLOY=true                              
+CMD ["--max-requests=500", "--log-level=info"]   
 ```
 
 **docker-compose.yml** 
 ```yaml
-# For local development vnvironment only
+# Use only for local development
 
 services:
-    my-app:
-        build:
-            context: ..
-            dockerfile: .docker/Dockerfile
-            target: base   # <-- Use the `base` stage for local development
-            volumes:
-            - ../:/app:cached
-        ports:
-            - 8000:8000
+  my-app:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+      target: base   # <-- Use the `base` stage for local development
+      volumes:
+      - ../:/app:cached
+    ports:
+      - 8000:8000
 ```
 
 **deploy.sh**
 ```bash
 #!/usr/bin/zsh
 
-# This script is intended to run during production deployment. See `Dockerfile`
+# This script runs when `ENV RUN_DEPLOY=true`
+# Use it only for production
 
-echo '------ Starting deploy tasks  ------'
+echo '------ Starting deploy  ------'
 
 cp .env.example .env
 composer install --prefer-dist --no-interaction --no-progress --ansi
