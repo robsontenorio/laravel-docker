@@ -47,9 +47,8 @@ Production-ready Laravel image powered by [FrankenPHP](https://frankenphp.dev).
 ### Dockerfile
 
 ```Dockerfile
-# On `base` stage, CMD is not required
 # The default is CMD ["--max-requests=1"]
-# It will execute `php artisan octane:start --max-requests=1`
+# So, on `base` stage it executes `php artisan octane:start --max-requests=1`
 # For the `production` stage, you may want to customize these params.
 
 
