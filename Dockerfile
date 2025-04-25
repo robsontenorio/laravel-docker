@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp
+FROM dunglas/frankenphp:1.5.0-php8.4.5-bookworm
 
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
@@ -33,7 +33,8 @@ COPY config/database.sh /tmp/database.sh
 RUN chmod +x /tmp/database.sh && /tmp/database.sh
 
 # PHP setting
-COPY config/php.ini "$PHP_INI_DIR/php.ini"
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY config/php.ini "$PHP_INI_DIR/conf.d/extra-php.ini"
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer  | php -- --install-dir=/usr/bin --filename=composer    
