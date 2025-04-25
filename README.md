@@ -64,9 +64,9 @@ CMD ["--max-requests=500", "--log-level=info"]
 
 ### docker-compose.yml
 ```yaml
-# For local development only
-# Note that `target` refers to the `base` stage defined in the `Dockerfile` above.
-# The deploy script should not be executed in local environment.
+# Local development configuration.
+# The `target` refers to the `base` stage defined in the `Dockerfile` above.
+# So, the `production` stage will not be executed.
 
 
 services:
