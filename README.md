@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/octane/octopus.png">
+  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/refs/heads/fraken/octopus.png" height="128">
 </p> 
 <p align="center">    
   <a href="https://hub.docker.com/r/robsontenorio/laravel">
@@ -10,7 +10,17 @@
 
 # WIP - Laravel Docker (FrankenPHP)
 
-Laravel production ready image using **FrankenPHP in classic mode**. 
+Production-ready Laravel image powered by **FrankenPHP**.
+
+This image automatically detects if your application is using Laravel Octane and:
+- Starts in `worker` mode when Octane is present.
+- Falls back to `classic` mode otherwise.
+
+Also included:
+- Schedule worker.
+- Laravel Horizon worker.
+- PostgreSQL and MySQL drivers and utilities.
+- Common PHP extensions.
 
 ## Usage
 
@@ -28,19 +38,37 @@ Laravel production ready image using **FrankenPHP in classic mode**.
 **Dockerfile**
 
 ```Dockerfile
-# Base
-FROM robsontenorio/laravel:franken-classic AS base
+# Base stage for local development
+FROM robsontenorio/laravel:franken AS base
 COPY --chown=appuser:appuser . .
 
-# Production
+# Production stage with optimized settings
 FROM base AS deploy
-RUN chmod a+x .docker/deploy.sh
-CMD ["/bin/sh", "-c", ".docker/deploy.sh && start"]
+ENV RUN_DEPLOY=true                               # Triggers `deploy.sh` execution
+CMD ["--max-requests=500", "--log-level=info"]    # Production Octane parameters
+```
+
+**docker-compose.yml** 
+```yaml
+# For local development vnvironment only
+
+services:
+    my-app:
+        build:
+            context: ..
+            dockerfile: .docker/Dockerfile
+            target: base   # <-- For local development
+            volumes:
+            - ../:/app:cached
+        ports:
+            - 8000:8000
 ```
 
 **.docker/deploy.sh**
 ```bash
 #!/usr/bin/zsh
+
+# This script is intended to run during production deployment. See `Dockerfile`
 
 echo '------ Starting deploy tasks  ------'
 
@@ -58,20 +86,3 @@ php artisan optimize
 echo '------ Deploy completed ------'
 ```
 
-
-**docker-compose.yml** (for local development only)
-```yaml
-services:
-    my-app:
-        build:
-            context: ..
-            dockerfile: .docker/Dockerfile
-            target: base
-        environment:
-            - SERVER_NAME=:8217
-        tty: true
-        volumes:
-            - ../:/app:cached
-        ports:
-            - 8217:8217            
-```
