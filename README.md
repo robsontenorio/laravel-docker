@@ -10,7 +10,7 @@
 
 # Laravel Docker with FrankenPHP
 
-Production-ready Laravel image powered by **FrankenPHP**.
+Production-ready Laravel image powered by [FrankenPHP](https://frankenphp.dev).
 
 ## Features
 
