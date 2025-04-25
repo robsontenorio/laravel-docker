@@ -11,4 +11,4 @@ else
 fi
 
 # Start FrankenPHP
-frankenphp run --config /etc/caddy/Caddyfile
+frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
