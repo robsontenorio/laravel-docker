@@ -12,17 +12,24 @@
 
 Production-ready Laravel image powered by **FrankenPHP**.
 
-This image automatically detects if your application is using Laravel Octane and:
-- Starts in `worker` mode when Octane is present.
-- Falls back to `classic` mode otherwise.
+## Features
 
-Also included:
+- Laravel Octane support.
 - Schedule worker.
 - Laravel Horizon worker.
-- PostgreSQL and MySQL drivers + cli tools.
+- PostgreSQL / MySQL drivers and cli tools.
 - Common PHP extensions.
 - Composer / Node / Yarn / NPM.
 - OhMyZSH terminal.
+
+## Important
+
+
+💢 After installing **Laravel Octane** or **Laravel Horizon** , for the first time, you must restart the container. 
+
+💢 The restart is necessary because these processes are initiated through the `start.sh` script.
+
+💢 You can monitor the image startup progress by checking the container logs.
 
 ## Usage
 
@@ -40,8 +47,10 @@ Also included:
 **Dockerfile**
 
 ```Dockerfile
-# The default is  CMD["--max-requests=1"]
-# It will run `php artisan octane:start --max-requests=1`
+# On `base` stage, CMD is not required
+# The default is CMD["--max-requests=1"]
+# It will execute `php artisan octane:start --max-requests=1`
+# For the `production` stage, you may want to customize this value
 
 
 FROM robsontenorio/laravel:franken AS base
@@ -55,14 +64,17 @@ CMD ["--max-requests=500", "--log-level=info"]
 
 **docker-compose.yml** 
 ```yaml
-# Use only for local development
+# For local development only
+# Note that `target` refers to the `base` stage defined in the `Dockerfile` above.
+# The deploy script should not be executed in local environment.
+
 
 services:
   my-app:
     build:
       context: ..
       dockerfile: .docker/Dockerfile
-      target: base   # <-- Use the `base` stage for local development
+      target: base  
       volumes:
       - ../:/app:cached
     ports:
