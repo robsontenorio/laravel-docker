@@ -38,14 +38,13 @@ Also included:
 **Dockerfile**
 
 ```Dockerfile
-# Base stage
 FROM robsontenorio/laravel:franken AS base
 COPY --chown=appuser:appuser . .
+# CMD ["--max-requests=1"] This is the default, you can remove this line.
 
-# Production stage
-FROM base AS deploy
-ENV RUN_DEPLOY=true                               # Triggers `deploy.sh` execution
-CMD ["--max-requests=500", "--log-level=info"]    # Production Octane parameters
+FROM base AS production
+ENV RUN_DEPLOY=true                               # Triggers `deploy.sh` execution.
+CMD ["--max-requests=500", "--log-level=info"]    # Pass extra parameters for Octane.
 ```
 
 **docker-compose.yml** 
@@ -57,7 +56,7 @@ services:
         build:
             context: ..
             dockerfile: .docker/Dockerfile
-            target: base   # <-- For local development
+            target: base   # <-- Use the `base` stage for local development
             volumes:
             - ../:/app:cached
         ports:
