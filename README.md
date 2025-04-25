@@ -21,6 +21,7 @@ Production-ready Laravel image powered by [FrankenPHP](https://frankenphp.dev).
 - Common PHP extensions.
 - Composer / Node / Yarn / NPM.
 - OhMyZSH terminal.
+- Default user is `appuser` (non-root user).
 
 ## Important
 
