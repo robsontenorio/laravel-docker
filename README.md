@@ -8,7 +8,7 @@
   </a>
 </p>
 
-# WIP - Laravel Docker (FrankenPHP)
+# Laravel Docker with FrankenPHP
 
 Production-ready Laravel image powered by **FrankenPHP**.
 
@@ -64,7 +64,7 @@ services:
             - 8000:8000
 ```
 
-**.docker/deploy.sh**
+**deploy.sh**
 ```bash
 #!/usr/bin/zsh
 
