@@ -33,7 +33,7 @@ Production-ready Laravel image powered by **FrankenPHP**.
 
 ## Usage
 
-**Structure**
+### Structure
 ```bash
 |
 |_ .docker/
@@ -44,13 +44,13 @@ Production-ready Laravel image powered by **FrankenPHP**.
 |_ <your app>
 ```
 
-**Dockerfile**
+### Dockerfile
 
 ```Dockerfile
 # On `base` stage, CMD is not required
-# The default is CMD["--max-requests=1"]
+# The default is CMD ["--max-requests=1"]
 # It will execute `php artisan octane:start --max-requests=1`
-# For the `production` stage, you may want to customize this value
+# For the `production` stage, you may want to customize these params.
 
 
 FROM robsontenorio/laravel:franken AS base
@@ -62,7 +62,7 @@ ENV RUN_DEPLOY=true
 CMD ["--max-requests=500", "--log-level=info"]   
 ```
 
-**docker-compose.yml** 
+### docker-compose.yml
 ```yaml
 # For local development only
 # Note that `target` refers to the `base` stage defined in the `Dockerfile` above.
@@ -81,7 +81,7 @@ services:
       - 8000:8000
 ```
 
-**deploy.sh**
+### deploy.sh
 ```bash
 #!/usr/bin/zsh
 
