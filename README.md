@@ -15,8 +15,6 @@ It provides a flexible strategy to assign roles to specific containers by re-usi
 
 When handling massive amount of process the best option is to split into multiple containers. This way, each container has a specific role on servers and you can scale it independently.
 
-:bulb: **Need Laravel Octane + Swoole?** See <a href="https://github.com/robsontenorio/laravel-docker/tree/octane">here</a>.
-
 ## Features
 
 - Nginx
@@ -200,7 +198,3 @@ production:
     - docker build <path to Dockerfile>
     - docker push <to some registry>
 ```
-
-## Cypress
-
-Need e2e tests with Cypress? See [robsontenorio/laravel-docker-cypress](https://github.com/robsontenorio/laravel-docker-cypress)
