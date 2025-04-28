@@ -47,11 +47,12 @@ Production-ready Laravel image powered by [FrankenPHP](https://frankenphp.dev).
 
 ### Dockerfile
 
-```Dockerfile
-# The default is CMD ["--max-requests=1"]
-# So, on `base` stage it executes `php artisan octane:start --max-requests=1`
-# For the `production` stage, you may want to customize these params.
+Worker mode (Laravel Octane).
 
+```Dockerfile
+# It will run `php artisan octane:start --max-requests=1`
+# The default is CMD ["--max-requests=1"]
+# For the `production` stage, you may want to customize these params.
 
 FROM robsontenorio/laravel:franken AS base
 COPY --chown=appuser:appuser . .
@@ -60,6 +61,18 @@ COPY --chown=appuser:appuser . .
 FROM base AS production
 ENV RUN_DEPLOY=true                              
 CMD ["--max-requests=500", "--log-level=info"]   
+```
+
+Classic mode (no Laravel Octane).
+
+```Dockerfile
+# It will run `frankenphp run --config /etc/caddy/Caddyfile`
+
+FROM robsontenorio/laravel:franken-1.0 AS base
+COPY --chown=appuser:appuser . .
+
+FROM base AS production
+ENV RUN_DEPLOY=true
 ```
 
 ### docker-compose.yml
@@ -77,6 +90,7 @@ services:
       target: base  
       volumes:
       - ../:/app:cached
+    tty: true
     ports:
       - 8000:8000
 ```
