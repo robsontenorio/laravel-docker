@@ -54,7 +54,7 @@ Worker mode (Laravel Octane).
 # The default is CMD ["--max-requests=1"]
 # For the `production` stage, you may want to customize these params.
 
-FROM robsontenorio/laravel:franken AS base
+FROM robsontenorio/laravel:franken-1.0 AS base
 COPY --chown=appuser:appuser . .
 
 
