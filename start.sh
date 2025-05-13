@@ -1,35 +1,40 @@
-#!/usr/bin/env bash
-set -e
+#!/usr/bin/zsh
 
-role=${CONTAINER_ROLE}
+export FORCE_COLOR=1
 
-echo -e " 
+warning_msg() {
+  echo "\n\e[43;97m Warning \e[0m $1\n" >&2
+}
 
-*********************************************************************************
+success_msg() {
+  echo "\n\e[42;97m Success \e[0m $1\n" >&2
+}
 
-==> Starting \"robsontenorio/laravel\" image for CONTAINER_ROLE = \"$role\" ...
+info_msg() {
+  echo "\n\e[44;97m Info \e[0m $1\n" >&2
+}
 
-  APP (default)    => App webserver (nginx + php-fpm).
-  JOBS             => Queued jobs + scheduled commands (schedule:run).
-  ALL              => APP + JOBS
-
-*********************************************************************************
-
-"
-cd /etc/supervisor/conf.d-temp
-
-if [ "$role" = "APP" ]; then
-    cp nginx.conf ../conf.d/nginx.conf
-    cp php-fpm.conf ../conf.d/php-fpm.conf
-    cp scheduler.conf ../conf.d/scheduler.conf
-elif [ "$role" = "JOBS" ]; then    
-    cp php-fpm.conf ../conf.d/php-fpm.conf
-    cp jobs.conf ../conf.d/jobs.conf
-elif [ "$role" = "ALL" ]; then
-    cp nginx.conf ../conf.d/nginx.conf
-    cp php-fpm.conf ../conf.d/php-fpm.conf
-    cp jobs.conf ../conf.d/jobs.conf
-    cp scheduler.conf ../conf.d/scheduler.conf
+# Run deployment script
+if [ "$RUN_DEPLOY" = "true" ] && [ -f "/var/www/html/.docker/deploy.sh" ]; then
+    info_msg "🚀  Deployment script ........................................"
+    /bin/sh /var/www/html/.docker/deploy.sh
+    info_msg "🚀  Done! ...................................................."
 fi
 
-supervisord -c /etc/supervisord.conf
+
+# Laravel Scheduler
+if [ -d "vendor/laravel" ]; then
+    php artisan schedule:work > /dev/null 2>&1 &
+    success_msg "Laravel Scheduler started."
+else
+  warning_msg "Skiping Laravel Scheduler. Laravel not installed yet, make sure to restart the container after installing it."
+fi
+
+
+# Laravel Horizon
+if [ -d "vendor/laravel/horizon" ]; then
+    php artisan horizon > /dev/null 2>&1 &
+    success_msg "Laravel Horizon started."
+else
+  warning_msg "Skiping Laravel Horizon. If you want to use Horizon, make sure to restart the container after installing it."
+fi
