@@ -1,9 +1,11 @@
-FROM ghcr.io/serversideup/php:8.4.7-fpm-nginx
+# FROM ghcr.io/serversideup/php:8.4.7-fpm-nginx
+FROM serversideup/php-dev:523-8.4-fpm-nginx
 
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
 
 ENV PHP_OPCACHE_ENABLE=1
+ENV PHP_FPM_PM_MAX_REQUESTS=500
 
 USER root
 
