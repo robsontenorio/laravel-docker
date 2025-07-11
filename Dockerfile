@@ -7,6 +7,7 @@ LABEL site="https://github.com/robsontenorio/laravel-docker"
 ENV LANG="C.UTF-8"
 ENV PHP_OPCACHE_ENABLE=1
 ENV PHP_FPM_PM_MAX_REQUESTS=500
+ENV PHP_MEMORY_LIMIT=2048M
 
 USER root
 
