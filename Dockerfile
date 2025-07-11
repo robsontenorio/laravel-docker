@@ -4,6 +4,7 @@ FROM serversideup/php-dev:523-8.4-fpm-nginx
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
 
+ENV LANG="C.UTF-8"
 ENV PHP_OPCACHE_ENABLE=1
 ENV PHP_FPM_PM_MAX_REQUESTS=500
 
@@ -18,13 +19,14 @@ RUN apt update && \
         micro \
         htop \
         pass \
-        default-mysql-client
+        default-mysql-client 
 
-RUN install-php-extensions intl
+RUN install-php-extensions intl bcmath
 
-# Other database drivers
+# Extra packages
 COPY --chmod=755 extra/ /tmp/extra
-RUN /tmp/extra/databases.sh
+RUN /tmp/extra/pgdump/install.sh 
+RUN /tmp/extra/cache/install.sh
 
 # Node, NPM, Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
