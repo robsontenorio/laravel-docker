@@ -9,7 +9,13 @@ ENV PHP_OPCACHE_ENABLE=1
 ENV PHP_FPM_PM_MAX_REQUESTS=500
 ENV PHP_MEMORY_LIMIT=2048M
 
+ARG UID=1000
+ARG GID=1000
+
 USER root
+
+RUN docker-php-serversideup-set-id www-data $UID:$GID && \
+    docker-php-serversideup-set-file-permissions --owner $UID:$GID --service nginx
 
 RUN apt update && \
     apt install -y \
