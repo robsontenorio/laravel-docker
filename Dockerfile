@@ -1,5 +1,6 @@
-# FROM ghcr.io/serversideup/php:8.4.7-fpm-nginx
-FROM serversideup/php-dev:523-8.4-fpm-nginx
+# https://github.com/serversideup/docker-php/pull/523
+# Change the tag, after #523 is released.
+FROM serversideup/php-dev:523-8.4.10-fpm-nginx
 
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
@@ -14,9 +15,11 @@ ARG GID=1000
 
 USER root
 
+# Setup permissions
 RUN docker-php-serversideup-set-id www-data $UID:$GID && \
     docker-php-serversideup-set-file-permissions --owner $UID:$GID --service nginx
 
+# Basic packages
 RUN apt update && \
     apt install -y \
         git \
@@ -26,13 +29,14 @@ RUN apt update && \
         micro \
         htop \
         pass \
-        default-mysql-client 
+        default-mysql-client \
+        postgresql-client
 
+# Extensions
 RUN install-php-extensions intl bcmath
 
-# Extra packages
+# Extra installs
 COPY --chmod=755 extra/ /tmp/extra
-RUN /tmp/extra/pgdump/install.sh 
 RUN /tmp/extra/cache/install.sh
 
 # Node, NPM, Yarn
@@ -51,4 +55,3 @@ RUN composer global require laravel/installer && \
 
 # Startup script
 COPY --chmod=755 start.sh /etc/entrypoint.d/00-start.sh
-

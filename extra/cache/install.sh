@@ -9,8 +9,9 @@ set -e
 if [ $(uname -m) = "aarch64" ] ; then exit 0; fi    
 
 # Extra packages
+apt update && apt install -y unixodbc unixodbc-dev libodbccr2 odbcinst
+docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr
 install-php-extensions pdo odbc pdo_odbc
-apt update && apt install -y unixodbc libodbccr2 odbcinst
 
 # Prepare ODBC Caché driver
 mkdir -p /usr/local/cache/2018
@@ -22,4 +23,4 @@ cd /usr/local/cache/2018 && ./ODBCinstall
 odbcinst -i -s -f /etc/odbc.ini 
 
 # Binds
-ln -s /usr/lib/x86_64-linux-gnu/libodbccr.so.2.0.0 /etc/libodbccr.so
+ln -s /usr/lib/x86_64-linux-gnu/libodbccr.so.2.0.0 /usr/lib/libodbccr.so
