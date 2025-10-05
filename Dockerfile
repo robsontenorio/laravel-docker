@@ -8,7 +8,9 @@ LABEL site="https://github.com/robsontenorio/laravel-docker"
 ENV LANG="C.UTF-8"
 ENV PHP_OPCACHE_ENABLE=1
 ENV PHP_FPM_PM_MAX_REQUESTS=500
-ENV PHP_MEMORY_LIMIT=2048M
+ENV PHP_MEMORY_LIMIT=3072M
+ENV PHP_UPLOAD_MAX_FILE_SIZE=300M
+ENV PHP_POST_MAX_SIZE=300M
 
 ARG UID=1000
 ARG GID=1000
@@ -27,6 +29,7 @@ RUN apt update && \
         unzip \
         nano \
         micro \
+        chromium \
         htop \
         pass \
         default-mysql-client \
@@ -42,7 +45,7 @@ RUN /tmp/extra/cache/install.sh
 # Node, NPM, Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
 
-# Switch to www-data 
+# Switch to www-data
 USER www-data
 
 # OhMyZsh
