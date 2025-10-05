@@ -29,6 +29,7 @@ RUN apt update && \
         unzip \
         nano \
         micro \
+        chromium \
         htop \
         pass \
         default-mysql-client \
