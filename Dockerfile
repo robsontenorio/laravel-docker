@@ -1,4 +1,4 @@
-FROM serversideup/php:8.4.14-fpm-nginx
+FROM serversideup/php:8.5.0-fpm-nginx
 
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
@@ -31,6 +31,7 @@ RUN apt update && \
         micro \
         chromium \
         htop \
+        btop \
         pass \
         default-mysql-client \
         postgresql-client
