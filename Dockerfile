@@ -1,16 +1,16 @@
-# https://github.com/serversideup/docker-php/pull/523
-# Change the tag, after #523 is released.
-FROM serversideup/php-dev:523-8.4.10-fpm-nginx
+FROM serversideup/php:8.5.0-fpm-nginx
 
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
 
 ENV LANG="C.UTF-8"
 ENV PHP_OPCACHE_ENABLE=1
-ENV PHP_FPM_PM_MAX_REQUESTS=500
 ENV PHP_MEMORY_LIMIT=3072M
 ENV PHP_UPLOAD_MAX_FILE_SIZE=300M
 ENV PHP_POST_MAX_SIZE=300M
+ENV PHP_FPM_PM_MAX_REQUESTS=500
+ENV NGINX_ACCESS_LOG=/var/log/nginx/access.log
+ENV NGINX_ERROR_LOG=/var/log/nginx/error.log
 
 ARG UID=1000
 ARG GID=1000
@@ -31,6 +31,7 @@ RUN apt update && \
         micro \
         chromium \
         htop \
+        btop \
         pass \
         default-mysql-client \
         postgresql-client
