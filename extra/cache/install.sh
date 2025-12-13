@@ -9,7 +9,7 @@ set -e
 if [ $(uname -m) = "aarch64" ] ; then exit 0; fi    
 
 # Extra packages
-apt install -y unixodbc unixodbc-dev odbcinst
+apt update && apt install -y unixodbc unixodbc-dev odbcinst
 
 # Prepare ODBC Caché driver
 mkdir -p /usr/local/cache/2018
