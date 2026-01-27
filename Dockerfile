@@ -36,8 +36,11 @@ RUN apt update && \
         default-mysql-client \
         postgresql-client
 
-# Extensions
-RUN install-php-extensions intl bcmath
+# PHP extensions
+RUN install-php-extensions intl bcmath pcov exif sockets
+
+# Disable `pcov` by default
+RUN echo "pcov.enabled=0" >> /usr/local/etc/php/conf.d/zzz-pcov.ini
 
 # Node, NPM, Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && npm -g install yarn --unsafe-perm
