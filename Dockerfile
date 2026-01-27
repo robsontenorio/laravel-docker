@@ -36,8 +36,11 @@ RUN apt update && \
         default-mysql-client \
         postgresql-client
 
-# Extensions
-RUN install-php-extensions intl bcmath
+# PHP extensions
+RUN install-php-extensions intl bcmath pcov exif sockets
+
+# Disable `pcov` by default
+RUN echo "pcov.enabled=0" >> /usr/local/etc/php/conf.d/zzz-pcov.ini
 
 # Extra installs
 COPY --chmod=755 extra/ /tmp/extra
