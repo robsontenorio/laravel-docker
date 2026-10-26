@@ -1,4 +1,4 @@
-FROM serversideup/php:8.5.0-fpm-nginx
+FROM serversideup/php:8.5.12-fpm-nginx
 
 LABEL maintainer="Robson Tenório"
 LABEL site="https://github.com/robsontenorio/laravel-docker"
