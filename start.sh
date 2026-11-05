@@ -27,7 +27,7 @@ if [ "$RUN_DEPLOY" = "true" ] && [ -d "vendor/laravel" ]; then
     php artisan schedule:work > /dev/null 2>&1 &
     success_msg "Laravel Scheduler started."
 else
-  warning_msg "Skiping Laravel Scheduler. Laravel not installed yet, make sure to restart the container after installing it."
+  warning_msg "Skiping Laravel Scheduler. Start it on localhost with: php artisan schedule:work"
 fi
 
 
