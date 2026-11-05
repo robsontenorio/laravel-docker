@@ -23,7 +23,7 @@ fi
 
 
 # Laravel Scheduler
-if [ -d "vendor/laravel" ]; then
+if [ "$RUN_DEPLOY" = "true" ] && [ -d "vendor/laravel" ]; then
     php artisan schedule:work > /dev/null 2>&1 &
     success_msg "Laravel Scheduler started."
 else
