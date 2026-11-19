@@ -9,15 +9,15 @@
   </a>
 </p>
 
-# Laravel Docker Image
+## Laravel Docker Image
 
-🐘 This is an **opinionated** wrapper around [serverside/up](https://serversideup.net/open-source/docker-php/) docker image. 
+🐘 This is an **opinionated** wrapper around [serverside/up](https://serversideup.net/open-source/docker-php/). 
 
 🐘 Make sure to check the [Dockerfile](Dockerfile).
 
-🐘 For settings and environment variables, please check the original image docs.
+🐘 For settings and environment variables, see the original image docs.
 
-# Usage 
+## Usage 
 
 **Structure**
 
