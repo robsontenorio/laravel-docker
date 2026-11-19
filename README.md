@@ -1,23 +1,14 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/master/up.png">
-</p> 
-<p align="center">    
-  <a href="https://hub.docker.com/r/robsontenorio/laravel">
-    <img src="https://img.shields.io/docker/v/robsontenorio/laravel?color=green&sort=date" />
-    <img src="https://img.shields.io/docker/pulls/robsontenorio/laravel?color=orange" />
-    <img src="https://img.shields.io/docker/image-size/robsontenorio/laravel?sort=date" />
-  </a>
-</p>
+<img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/master/up.png" />  
 
 ## Laravel Docker Image
 
-🐘 This is an **opinionated** wrapper around [serverside/up](https://serversideup.net/open-source/docker-php/). 
+🐘 This is an **opinionated** wrapper around [serverside/up](https://serversideup.net/open-source/docker-php/).
 
 🐘 Make sure to check the [Dockerfile](Dockerfile).
 
 🐘 For settings and environment variables, see the original image docs.
 
-## Usage 
+## Usage
 
 **Structure**
 
@@ -44,7 +35,7 @@ services:
     build:
       target: base
       context: ..
-      dockerfile: .docker/Dockerfile      
+      dockerfile: .docker/Dockerfile
     volumes:
       - ../:/var/www/html:cached
     ports:

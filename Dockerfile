@@ -30,7 +30,6 @@ RUN apt update && \
         unzip \
         nano \
         micro \
-        chromium \
         htop \
         btop \
         pass \
