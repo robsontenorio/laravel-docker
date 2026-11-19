@@ -1,200 +1,80 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/master/octopus.png">
+  <img src="https://raw.githubusercontent.com/robsontenorio/laravel-docker/master/up.png">
 </p> 
 <p align="center">    
   <a href="https://hub.docker.com/r/robsontenorio/laravel">
-    <img src="https://img.shields.io/docker/v/robsontenorio/laravel?color=green&sort=semver&style=for-the-badge" />
-    <img src="https://img.shields.io/docker/pulls/robsontenorio/laravel?color=orange&style=for-the-badge" />
-    <img src="https://img.shields.io/docker/image-size/robsontenorio/laravel?sort=date&style=for-the-badge" />
+    <img src="https://img.shields.io/docker/v/robsontenorio/laravel?color=green&sort=date" />
+    <img src="https://img.shields.io/docker/pulls/robsontenorio/laravel?color=orange" />
+    <img src="https://img.shields.io/docker/image-size/robsontenorio/laravel?sort=date" />
   </a>
 </p>
 
-# Laravel Docker Image (FPM)
+# Laravel Docker Image
 
-It provides a flexible strategy to assign roles to specific containers by re-using same image.
+🐘 This is an **opinionated** wrapper around [serverside/up](https://serversideup.net/open-source/docker-php/) docker image. 
 
-When handling massive amount of process the best option is to split into multiple containers. This way, each container has a specific role on servers and you can scale it independently.
+🐘 Make sure to check the [Dockerfile](Dockerfile).
 
-## Features
+🐘 For settings and environment variables, please check the original image docs.
 
-- Nginx
-- PHP
-    - FPM and common extensions
-    - Composer
-    - Laravel Installer    
-- Node
-    - Yarn
-    - Npm
-- Database drivers
-    - Mysql 
-    - Postgres 
-    - Sqlite
-- Supervisor
-   - All services are started through `supervisord`
-- Extra
-   - Zsh
-   - Git
-   - And more ...
+# Usage 
 
-## Container role
-
-Assign specific role to a container.
-**Laravel Horizon is mandatory for JOB or ALL roles.**
-
-
-| Value             | Description |
-| ---------------   | ----------- |
-| APP *(default)*   | php-fpm + nginx  
-| JOBS              | php-fpm + horizon queue + scheduler 
-| ALL               | all in one
-
-### Optional
-
-| Key                         | Description |
-| --------------------------- | ----------- |
-| GITHUB_OAUTH_KEY            | Needed due to github rate limit |
-
-
-## Local development
-
-`CONTAINER_ROLE=ALL` . This is the all in one strategy on same container.
-
-```yaml
-# docker-compose.yml
-
-services:
-  # nginx + php-fpm + horizon queue + scheduler
-  app:
-    image: robsontenorio/laravel    
-    environment:
-      - CONTAINER_ROLE=ALL
-    volumes:
-      - .:/var/www/app
-    ports:
-      - 8080:8080
-
-    # Other services  here like mysql, redis ...
-```
-
-Split into multiple containers.
-
-```yaml
-# docker-compose.yml
-
-services:
-  # php-fpm + nginx
-  app:
-    image: robsontenorio/laravel
-    environment:
-        - CONTAINER_ROLE=APP
-    volumes:
-      - .:/var/www/app
-    ports:
-      - 8080:8080
- 
-  # php-fpm + horizon queue + scheduler
-  jobs:
-    image: robsontenorio/laravel
-    environment:
-        - CONTAINER_ROLE=JOBS
-    volumes:
-      - .:/var/www/app
-
- # Other services like mysql, redis ...
-```
-
-
-## Production
-
-This only applies if your deployment platform is based on docker. 
-
-This image relies on `/usr/local/bin/start`  script to bootstrap all services.
-
-Consider this setup.
+**Structure**
 
 ```bash
- .docker/
-    |__ deploy.sh           # production only
-    |__ Dockerfile          # production only
-    |__ docker-compose.yml  # development only
+  |
+  |__ .docker/
+  |  |__ compose.yaml
+  |  |__ Dockerfile
+  |  |__ deploy.sh       #  Deploy script
+  |
+  |__ app/
+  |__ bootstrap/
+  |__ config/
+  |__ ...
+    
 
-  app/
-   |__ ...
 ```
 
-A good idea is to have a `deploy.sh` script to run any aditional commands before container startup on target deployment platform.
+**compose.yaml**
+
+```yaml
+services:
+  app:
+    build:
+      target: base
+      context: ..
+      dockerfile: .docker/Dockerfile      
+    volumes:
+      - ../:/var/www/html:cached
+    ports:
+      - "8080:8080"
+```
+
+**Dockerfile**
+
+```Dockerfile
+# Base 
+FROM robsontenorio/laravel AS base
+COPY --chown=www-data:www-data . .
+
+# Build
+FROM base AS build
+RUN cp .env.example .env
+RUN composer install --prefer-dist --no-interaction --no-progress --quiet --ansi --no-dev
+RUN yarn install --silent && yarn build && yarn cache clean && rm -rf node_modules
+
+# Production
+FROM build AS production
+ENV RUN_DEPLOY=true
+```
+
+**deploy.sh**
 
 ```bash
-#!/bin/sh
-set -e
+#!/usr/bin/zsh
 
-echo 'Starting deployment tasks ...'
-
-php artisan config:cache
 php artisan migrate --seed --force
-
-# more commands ...
-
-echo 'Done!'
-```
-
-So, on `Dockerfile`
-
-```dockerfile
-FROM robsontenorio/laravel
-
-COPY . .
-RUN chmod a+x .docker/deploy.sh
-
-# Run deployment tasks before start services
-CMD ["/bin/sh", "-c", ".docker/deploy.sh && /usr/local/bin/start"] 
-```
-
-### Container role
-
-It really depends on platform you will deploy. All you need is to set an environment variable to container.
-
-- CONTAINER_ROLE=APP (default, no need to set)
-- CONTAINER_ROLE=JOBS
-- CONTAINER_ROLE=ALL
-
-## Gitlab example
-
-```yaml
-image: robsontenorio/laravel  # <--- Will be used in all steps
-
-stages:
-  - build
-  - test
-  - deploy
-
-# Install PHP dependencies
-composer:  
-  stage: build
-  ...
-
-# Install JS dependencies
-yarn:  
-  stage: build  
-  ...
-
-# PHP tests
-phpunit:  
-  stage: test
-  dependencies:
-    - composer
-    - yarn    
-  ...
-
-
-# Build production final docker image and deploy it (optional)
-production:
-   stage: deploy
-   image: docker:latest
-   only:
-    - tags
-   script:
-    - docker login <credentials>
-    - docker build <path to Dockerfile>
-    - docker push <to some registry>
+php artisan storage:link
+php artisan optimize
 ```
